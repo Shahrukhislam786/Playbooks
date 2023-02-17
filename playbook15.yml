@@ -1,0 +1,44 @@
+---
+- name: Setup of jenkins and required softwares
+  hosts: Jenkinsserver
+  become: yes
+  tasks:
+    - name: Install required s/w
+      apt:
+        name: "{{item.a}}"
+        state: absent
+        update_cache: "{{item.b}}"
+      with_items:
+        - {a: openjdk-11-jdk,b: yes}
+        - {a: git,b: no}
+        - {a: maven,b: yes}
+      tags: software_installation
+    - name: Download jenkins.war file
+      get_url:
+        url: https://get.jenkins.io/war-stable/2.375.3/jenkins.war
+        dest: /home/ubuntu
+
+- name: Setup of Prod server
+  hosts: prodserver
+  become: yes
+  tasks:
+    - name: Install required s/w
+      apt:
+        name: "{{item.a}}"
+        state: absent
+        update_cache: "{{item.b}}"
+      with_items:
+        - {a: tomcat9,b: yes}
+        - {a: tomcat9-admin,b: no}
+      tags: software_install
+    - name: copy tomcat-users.xml file
+      copy:
+        src: /home/ubuntu/tomcat-users.xml
+        dest: /etc/tomcat9/
+      notify: restart tomcat service
+  handlers:
+    - name: restart tomcat service
+      service:
+        name: tomcat9
+        state: restarted
+...

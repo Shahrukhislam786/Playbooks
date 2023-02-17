@@ -1,0 +1,14 @@
+---
+- name: implimenting loops
+  hosts: all
+  tasks:
+    - name: install s/w
+      apt:
+        name: "{{item.a}}"
+        state: "{{item.b}}"
+        update_cache: "{{item.c}}"
+      with_items:
+        - {a: tree,b: present,c: yes}
+        - {a: git,b: present,c: no}
+        - {a: maven,b: present,c: no}
+...

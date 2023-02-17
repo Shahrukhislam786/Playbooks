@@ -1,0 +1,25 @@
+---
+- name: Complete setup of apache2
+  hosts: all
+  tasks:
+    - name: install apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+    - name: Change homepage of apache2
+      copy:
+        dest: /var/www/html/index.html
+        content: "Welcome to Earth"
+    - name: restart apache2 service
+      service:
+        name: apache2
+        state: restarted
+    - name: check url response for server1 and server2
+      uri:
+        url: "{{item}}"
+        status_code: 200
+      with_items:
+        - http://172.31.52.195
+        - http://172.31.48.153
+...
