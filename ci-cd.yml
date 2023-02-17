@@ -1,0 +1,62 @@
+---
+- name: Install required softwares for ci-cd in devserver
+  hosts: devserver
+  tasks:
+    - name: install s/w
+      apt:
+        name: "{{item.a}}"
+        state: present
+        update_cache: "{{item.b}}"
+      with_items:
+        - {a: openjdk-11-jdk,b: yes}
+        - {a: git,b: no}
+        - {a: maven,b: no}
+
+- name: Install required s/w for ci-cd in qaserver
+  hosts: qaserver
+  tasks:
+    - name: install s/s
+      apt:
+        name: "{{item.a}}"
+        state: present
+        update_cache: "{{item.b}}"
+      with_items:
+        - {a: tomcat9,b: yes}
+        - {a: tomcat9-admin,b: no}
+
+- name: continuous download and continous build
+  hosts: devserver
+  tasks:
+    - name: download the dev code grom git repository
+      git:
+        repo: https://github.com/Shahrukhislam786/maven.git
+        dest: dev-git
+    - name: Create an artifact
+      shell: cd dev-git;mvn package
+    - name: fetch artifact from dev to controller
+      fetch:
+        src: dev-git/webapp/target/webapp.war
+        dest: /tmp
+
+- name: continous deployment and continous testing
+  hosts: qaserver
+  tasks:
+    - name: continous deployment to qa server
+      copy:
+        src: /tmp/172.31.51.0/dev-git/webapp/target/webapp.war
+        dest: /var/lib/tomcat9/webapps/testapp.war
+    - name: download selenium code from github
+      git:
+        repo: https://github.com/Shahrukhislam786/FunctionalTesting.git
+        dest: test-git
+    - name: execute the selenium code
+      shell: java -jar test-git/testing.jar
+
+- name: Continous delivery to prodserver
+  hosts: prodserver
+  tasks:
+    - name: deliver to prodserver
+      copy:
+        src: /tmp/172.31.51.0/dev-git/webapp/target/webapp.war
+        dest: /var/lib/tomcat9/webapps/prodapp.war
+...
