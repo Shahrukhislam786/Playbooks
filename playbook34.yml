@@ -1,0 +1,15 @@
+---
+- name: Login intu docker registory an push a docker image
+  hosts: 172.31.59.58
+  tasks:
+    - name: Login to docker registory
+      docker_login:
+        username: shahrukhislam786
+        password: Shruti@14357
+    - name: Push docker image
+      docker_image:
+        name: shahrukhislam786/myubuntu
+        push: true
+        source: local
+...
+

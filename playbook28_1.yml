@@ -1,0 +1,14 @@
+---
+- name: Stop and delete a container
+  hosts: all
+  become: yes
+  tasks:
+    - name: Stop the container
+      docker_container:
+        name: appserver
+        state: stopped
+    - name: delete the container
+      docker_container:
+        name: appserver
+        state: absent
+...

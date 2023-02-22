@@ -1,0 +1,12 @@
+---
+- name: Shutdowm Ubuntu 20 service
+  hosts: all
+  strategy: free
+  serial: 2
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: shutdown ubuntu 20
+      shell: /sbin/shutdown
+      when: ansible_distribution == "Ubuntu"
+...

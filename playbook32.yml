@@ -1,0 +1,14 @@
+---
+- name: Create an Ubuntu Container and mount volume
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create an Ubuntu container
+      docker_container:
+        name: myubuntu
+        image: ubuntu
+        interactive: true
+        tty: true
+        volumes:
+          - /shahrukh
+...

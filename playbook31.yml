@@ -1,0 +1,22 @@
+---
+- name: Create jenkins lnked with 2 tomcat containers
+  hosts: all
+  tasks:
+    - name: Create Jenkins container
+      docker_container:
+        name: myjenkins
+        image: jenkins/jenkins
+        ports:
+          - 4040:8080
+    - name: Create tomcat QA and Prod Server
+      docker_container:
+        name: "{{item.a}}"
+        image: tomcat
+        ports:
+          - "{{item.b}}"
+        links:
+          - myjenkins:jenkins
+      with_items:
+        - {a: QAserver,b: "5050:8080"}
+        - {a: Prodserver,b: "6060:8080"}
+...

@@ -1,0 +1,11 @@
+---
+- name: Delete all containers and images
+  hosts: all
+  tasks:
+    - name: Delete all containers and images
+      shell: "{{item}}"
+      with_items:
+        - docker rm -f $(docker ps -aq)
+        - docker system prune -af
+
+...
